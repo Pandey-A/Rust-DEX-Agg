@@ -2,6 +2,9 @@ use crate::types::{AggregatorError, Result};
 use ethers::types::{Address, U256};
 use std::str::FromStr;
 
+/// Basis points base used for fee and price impact calculations (100% = 10_000 bps)
+pub const BPS_BASE: u32 = 10_000;
+
 /// Calculate UniswapV2 output amount using the constant product formula
 /// amountOut = (amountIn * feeFactor * reserveOut) / (reserveIn * 10000 + amountIn * feeFactor)
 /// where feeFactor = 10000 - fee_bps (e.g., 9970 for 0.3% fee)
@@ -19,9 +22,9 @@ pub fn calculate_uniswap_v2_output(
         return Err(AggregatorError::InsufficientLiquidity("Pool has zero reserves".to_string()));
     }
 
-    // Calculate fee factor (10000 - fee_bps)
-    let fee_factor = U256::from(10000 - fee_bps);
-    let fee_base = U256::from(10000);
+    // Calculate fee factor (BPS_BASE - fee_bps)
+    let fee_factor = U256::from(BPS_BASE - fee_bps);
+    let fee_base = U256::from(BPS_BASE);
 
     // amountInWithFee = amountIn * feeFactor
     let amount_in_with_fee = amount_in
@@ -62,7 +65,7 @@ pub fn calculate_price_impact(
     reserve_out: U256,
 ) -> u32 {
     if reserve_in.is_zero() || reserve_out.is_zero() {
-        return 10000; // 100% impact if no liquidity
+        return BPS_BASE; // 100% impact if no liquidity
     }
 
     // Spot price before swap: reserveOut / reserveIn
@@ -75,34 +78,34 @@ pub fn calculate_price_impact(
     let numerator = match amount_in.checked_mul(reserve_out) {
         Some(val) => match amount_out.checked_mul(reserve_in) {
             Some(val2) => val.saturating_sub(val2),
-            None => return 10000,
+            None => return BPS_BASE,
         },
-        None => return 10000,
+        None => return BPS_BASE,
     };
 
     let denominator = match amount_in.checked_mul(reserve_out) {
         Some(val) => val,
-        None => return 10000,
+        None => return BPS_BASE,
     };
 
     if denominator.is_zero() {
-        return 10000;
+        return BPS_BASE;
     }
 
     // Calculate impact in basis points
     let impact = numerator
-        .checked_mul(U256::from(10000))
+        .checked_mul(U256::from(BPS_BASE))
         .and_then(|v| v.checked_div(denominator))
-        .unwrap_or(U256::from(10000));
+        .unwrap_or(U256::from(BPS_BASE));
 
-    impact.as_u32().min(10000)
+    impact.as_u32().min(BPS_BASE)
 }
 
 /// Calculate the fee amount from an input amount
 pub fn calculate_fee(amount: U256, fee_bps: u32) -> U256 {
     amount
         .checked_mul(U256::from(fee_bps))
-        .and_then(|v| v.checked_div(U256::from(10000)))
+        .and_then(|v| v.checked_div(U256::from(BPS_BASE)))
         .unwrap_or(U256::zero())
 }
 
