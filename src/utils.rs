@@ -109,6 +109,16 @@ pub fn calculate_fee(amount: U256, fee_bps: u32) -> U256 {
         .unwrap_or(U256::zero())
 }
 
+/// Convert basis points to a fractional percentage (e.g. 30 -> 0.003 for 0.3%)
+pub fn bps_to_percentage(bps: u32) -> f64 {
+    bps as f64 / BPS_BASE as f64
+}
+
+/// Convert a fractional percentage (0.0 - 1.0) to basis points (e.g. 0.003 -> 30)
+pub fn percentage_to_bps(percentage: f64) -> u32 {
+    (percentage * BPS_BASE as f64).round() as u32
+}
+
 /// Get token decimals for known tokens
 /// Returns 18 (default) if token is unknown
 pub fn get_token_decimals(token_address: Address) -> u8 {
@@ -385,5 +395,12 @@ mod tests {
     fn test_gwei_to_wei() {
         let wei = gwei_to_wei(30);
         assert_eq!(wei, U256::from(30_000_000_000u64));
+    }
+
+    #[test]
+    fn test_bps_conversions() {
+        assert!((bps_to_percentage(30) - 0.003).abs() < 1e-9);
+        assert_eq!(percentage_to_bps(0.003), 30);
+        assert_eq!(percentage_to_bps(1.0), BPS_BASE);
     }
 }
