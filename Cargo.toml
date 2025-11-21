@@ -1,0 +1,68 @@
+[package]
+name = "rust-aggregator"
+version = "0.1.0"
+edition = "2021"
+authors = ["Your Name <your.email@example.com>"]
+description = "A high-performance DEX aggregator for finding optimal swap routes"
+license = "MIT"
+
+[[bin]]
+name = "dex"
+path = "src/main.rs"
+
+[lib]
+name = "rust_aggregator"
+path = "src/lib.rs"
+
+[dependencies]
+# Ethereum interaction
+ethers = { version = "2.0", features = ["legacy"] }
+
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+
+# CLI framework
+clap = { version = "4.5", features = ["derive", "env"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Concurrent data structures
+dashmap = "5.5"
+
+# Decimal precision
+rust_decimal = "1.33"
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Configuration
+dotenvy = "0.15"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+# Terminal output
+colored = "2.1"
+comfy-table = "7.1"
+
+# Date and time
+chrono = "0.4"
+indicatif = "0.17"
+
+# Utility
+hex = "0.4"
+once_cell = "1.19"
+
+[dev-dependencies]
+mockall = "0.12"
+tempfile = "3.8"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
