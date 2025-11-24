@@ -374,6 +374,14 @@ mod tests {
     }
 
     #[test]
+    fn test_parse_token_amount_errors() {
+        // Invalid format
+        assert!(parse_token_amount("1.0.0", 18).is_err());
+        // Too many decimals
+        assert!(parse_token_amount("1.1234567", 6).is_err());
+    }
+
+    #[test]
     fn test_format_token_amount() {
         let amount = U256::from(1_000_000_000_000_000_000u128);
         assert_eq!(format_token_amount(amount, 18), "1");
