@@ -346,9 +346,6 @@ cargo clippy
 cargo fmt
 ```
 
-## License
-
-MIT License - see LICENSE file for details
 
 
-# Rust-DEX-Agg
+
