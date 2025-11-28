@@ -1,4 +1,4 @@
-# Rust DEX Aggregator
+## Rust DEX Aggregator
 
 A high-performance decentralized exchange (DEX) aggregator built in Rust for finding optimal token swap routes across multiple DEXes on Ethereum mainnet.
 
