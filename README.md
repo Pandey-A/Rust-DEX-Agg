@@ -56,7 +56,7 @@ rust-aggregator/
 ### Build from Source
 
 ```bash
-git clone https://github.com/gks2022004/rust-aggregator.git
+git clone https://github.com/Pandey-A/Rust-DEX-Agg.git
 cd rust-aggregator
 cargo build --release
 ```
