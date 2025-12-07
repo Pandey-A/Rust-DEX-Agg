@@ -7,7 +7,7 @@ pub const BPS_BASE: u32 = 10_000;
 
 /// Calculate UniswapV2 output amount using the constant product formula
 /// amountOut = (amountIn * feeFactor * reserveOut) / (reserveIn * 10000 + amountIn * feeFactor)
-
+/// where feeFactor = 10000 - fee_bps (e.g., 9970 for 0.3% fee)
 pub fn calculate_uniswap_v2_output(
     amount_in: U256,
     reserve_in: U256,
